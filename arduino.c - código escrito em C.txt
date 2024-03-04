@@ -1,0 +1,55 @@
+arduino.c - código escrito em C
+arduino.cpp - escrito em C++
+arduino.cs - escrito em C#
+arduino.py - python
+arduino.ipynb - código escrito em python notebook
+
+C++
+Ponto vírgula - em C++ toda instrução tem ; no final.
+Comentar - 
+Single line - "//" esse comentário só serve para uma linha
+Multi linha - "/*         */"
+
+	exemplo:
+
+	int idade_nilton = 22;
+	bool sala5_com_aluno = false;
+	bool indicador_ocupacao = 0;
+	// variáveis do programa básico da tropinha.
+
+
+Arduino
+
+Como funciona a estrutura de código
+
+1. Definição de variáveis / importação de bibliotecas
+2. Função de setup
+	No arduino, função de setup serve para inicializar e somente roda 1 ÚNICA VEZ.
+	
+	Sintaxe - a forma como escreve.
+
+	void setup () {
+		// tudo que estiver aqui dentro executa só UMA VEZ.
+		sala5_com_aluno = true;
+		pinMode(3, OUTPUT);
+		pinMode(1, INPUT);
+		pinMode(variável que eu quero definir, comando que vai ser definido); // função com 2 argumentos que define se é entrada ou saída
+	}
+
+
+3. Função de loop
+	Fica executando o código em loop, só sai do loop se for resetado ou sofrer interrupção.
+	O código deve estar aqui dentro.
+	
+	void Loop () {
+		indicador_ocupacao = true;
+		digitalWrite(3, high); // serve para ligar um pino
+		delay(1000);
+		indicador_ocupacao = 0;
+		digitalWrite(3, 0);
+		delay(1000);
+	} // depois daqui volta para o começo do loop
+
+
+
+4. Funções adicionais
