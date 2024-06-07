@@ -1,0 +1,248 @@
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C LCD = LiquidCrystal_I2C(0x27, 16, 2);
+
+#define botaoAmarelo 32  
+#define botaoAzul 33
+#define botaoVerde 34
+#define botaoVermelho 35  
+
+int cont = 0;
+bool relogioAlterado = false;
+int tempoRelogio = 1000; 
+
+void setup(){
+  Serial.begin(115200);
+  pinMode(botaoAmarelo, INPUT);
+  pinMode(botaoAzul, INPUT);
+  pinMode(botaoVerde, INPUT);
+  pinMode(botaoVermelho, INPUT);
+  LCD.backlight();
+  LCD.init();
+  LCD.setCursor(0, 0);
+  LCD.print("Bem-vindo!");
+  delay(2000);
+  menu();
+}
+
+void loop(){
+  int botao = lerBotao();
+  if (botao == botaoAzul) {
+    avancar();
+  } else if (botao == botaoAmarelo) {
+    voltar();
+  } else if (botao == botaoVerde) {
+    confirmar();
+  } else if (botao == botaoVermelho) {
+    cancelar();
+  }
+}
+
+void menu() {
+  LCD.clear();
+  LCD.setCursor(0, 0);
+  LCD.print("Menu:");
+  LCD.setCursor(0, 1);
+  LCD.print("1. Contar       ");
+  delay(1500);
+  LCD.setCursor(0, 1);
+  LCD.print("2. Relogio      ");
+  delay(1500);
+  LCD.setCursor(0, 1);
+  LCD.print("3. Zerar        ");
+  delay(1500);
+  LCD.setCursor(0, 1);
+  LCD.print("Selecione:");
+  while (true) {
+    int botao = lerBotao();
+    if (botao == botaoAzul) {
+      avancar();
+      break;
+    } else if (botao == botaoAmarelo) {
+      voltar();
+      break;
+    } else if (botao == botaoVerde) {
+      confirmar();
+      break;
+    } else if (botao == botaoVermelho) {
+      cancelar();
+      break;
+    }
+  }
+}
+
+
+void avancar() {
+  int opcao = lerOpcao();
+  if (opcao == 1) {
+    contarAoClicar();
+  } else if (opcao == 2) {
+    relogio();
+  } else if (opcao == 3) {
+    zerarDados();
+  }
+}
+
+
+void voltar() {
+  menu();
+}
+
+void confirmar() {
+}
+
+
+void cancelar() {
+  menu();
+}
+
+
+int lerBotao() {
+  if (digitalRead(botaoAmarelo) == HIGH) {
+    delay(100);
+    return botaoAmarelo;
+  } else if (digitalRead(botaoAzul) == HIGH) {
+    delay(100);
+    return botaoAzul;
+  } else if (digitalRead(botaoVerde) == HIGH) {
+    delay(100);
+    return botaoVerde;
+  } else if (digitalRead(botaoVermelho) == HIGH) {
+    return botaoVermelho;
+  }
+  return -1;
+}
+
+
+int lerOpcao() {
+  int opcao = 1;
+  while (true) {
+    LCD.setCursor(0, 1);
+    if (opcao == 1) {
+      LCD.print("1. Contar");
+    } else if (opcao == 2) {
+      LCD.print("2. Relogio");
+    } else if (opcao == 3) {
+      LCD.print("3. Zerar  ");
+    }
+    int botao = lerBotao();
+    if (botao == botaoAzul) {
+      opcao++;
+      if (opcao > 3) {
+        opcao = 1;
+      }
+    } else if (botao == botaoAmarelo) {
+      opcao--;
+      if (opcao < 1) {
+        opcao = 3;
+      }
+    } else if (botao == botaoVerde) {
+      return opcao;
+    } else if (botao == botaoVermelho) {
+      return -1;
+    }
+  }
+}
+
+
+void contarAoClicar() {
+  LCD.clear();
+  LCD.setCursor(0, 0);
+  LCD.print("Contador:");
+  LCD.setCursor(0, 1);
+  LCD.print("Cliques: ");
+  LCD.print(cont);
+  while (true) {
+    int botao = lerBotao();
+    if (botao == botaoAzul) {
+      cont++;
+      LCD.setCursor(0,1);
+      LCD.print("            ");
+      LCD.setCursor(0, 1);
+      LCD.print("Cliques: ");
+      LCD.print(cont);
+    } else if (botao == botaoAmarelo) {
+      cont = 0;
+      LCD.setCursor(0, 1);
+      LCD.print("Cliques: ");
+      LCD.print(cont);
+    } else if (botao == botaoVermelho) {
+      menu();
+      break;
+    }
+  }
+}
+
+
+void relogio() {
+  LCD.clear();
+  LCD.setCursor(0, 0);
+  LCD.print("Relogio:");
+  int horas = 00;
+  int minutos = 00;
+  int segundos = 00;
+  int tempoRelogio = 1000; 
+  bool relogioAlterado = false;
+  while (true) {
+    LCD.setCursor(0, 1);
+    LCD.print(horas);
+    LCD.print(":");
+    LCD.print(minutos);
+    LCD.print(":");
+    LCD.print(segundos);
+    delay(tempoRelogio);
+    segundos++;
+    if (segundos == 60) {
+      segundos = 00;
+      minutos++;
+    }
+    if (minutos == 60) {
+      minutos = 00;
+      horas++;
+    }
+    if (horas == 24) {
+      horas = 00;
+    }
+    int botao = lerBotao();
+    if (botao == botaoAzul) {
+      if (relogioAlterado) {
+        tempoRelogio = 1000;
+      } else {
+        tempoRelogio = 250;
+      }
+      relogioAlterado =!relogioAlterado;
+    } else if (botao == botaoAmarelo) {
+      tempoRelogio = 1000;
+      relogioAlterado = false;
+    } else if (botao == botaoVermelho) {
+      menu();
+      break;
+    }
+  }
+}
+
+void zerarDados() {
+  LCD.clear();
+  LCD.setCursor(0, 0);
+  LCD.print("Deseja zerar todos");
+  LCD.setCursor(0, 1);
+  LCD.print("os dados?");
+  int tempoPressionado = 0;
+  bool botaoVerdePressionado = false;
+  while (true) {
+    int botao = lerBotao();
+    if (botao == botaoVerde) {
+      botaoVerdePressionado = true;
+      tempoPressionado = millis();
+    } else if (botao == botaoVermelho) {
+      break;
+    }
+    if (botaoVerdePressionado && millis() - tempoPressionado > 3000) {
+      cont = 0;
+      break;
+    }
+  }
+
+
+  menu();
+}
